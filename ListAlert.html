@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ListAlert"/>
+<meta name="theme-color" content="#0A0A0A"/>
+<title>ListAlert</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0A0A0A;--bg2:#141414;--bg3:#1E1E1E;--bg4:#282828;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --text:#F5F5F5;--text2:#A0A0A0;--text3:#555;
+  --green:#4ADE80;--green-dim:rgba(74,222,128,0.12);--green-border:rgba(74,222,128,0.3);
+  --blue:#60A5FA;--blue-dim:rgba(96,165,250,0.12);--blue-border:rgba(96,165,250,0.3);
+  --red:#F87171;--red-dim:rgba(248,113,113,0.12);
+  --amber:#FBBF24;--amber-dim:rgba(251,191,36,0.12);--amber-border:rgba(251,191,36,0.3);
+  --violet:#A78BFA;--violet-dim:rgba(167,139,250,0.12);--violet-border:rgba(167,139,250,0.3);
+  --r:14px;--r-sm:10px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:"Outfit",sans-serif;color:var(--text)}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:430px;margin:0 auto;background:var(--bg);overflow:hidden}
+
+.header{padding:52px 20px 12px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:24px;font-weight:700;letter-spacing:-0.5px}
+.header h1 em{color:var(--green);font-style:normal}
+.gps-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;cursor:pointer;border:none;font-family:"Outfit",sans-serif}
+.gps-btn.on{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
+.gps-btn.off{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,0.3)}
+.gps-btn.wait{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot.on{background:var(--green);animation:pulse 2s infinite}
+.dot.off{background:var(--red)}
+.dot.wait{background:var(--amber);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.tabs{display:flex;padding:0 20px;gap:4px;flex-shrink:0;margin-bottom:2px}
+.tab{flex:1;padding:9px 4px;text-align:center;font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;border-radius:8px;border:none;background:none;font-family:"Outfit",sans-serif;transition:all .15s}
+.tab.active{color:var(--text);background:var(--bg3)}
+
+.view{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:88px}
+.view.active{display:block}
+
+/* Notification */
+.notif{margin:10px 16px 4px;background:var(--green-dim);border:1px solid var(--green-border);border-radius:var(--r);padding:13px 15px;display:flex;gap:11px;align-items:flex-start}
+.notif-ico{font-size:20px;flex-shrink:0}
+.notif-title{font-size:14px;font-weight:700;color:var(--green)}
+.notif-body{font-size:13px;color:rgba(74,222,128,0.7);margin-top:2px;line-height:1.4}
+.notif-btns{display:flex;gap:8px;margin-top:9px}
+.nbtn{height:33px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:"Outfit",sans-serif;border:1px solid var(--green-border);background:transparent;color:var(--green)}
+.nbtn.p{background:var(--green);color:#0A0A0A;border-color:var(--green)}
+
+/* Add bar */
+.add-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:10px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--border);display:flex;gap:8px;z-index:100}
+.add-bar input{flex:1;height:46px;border:1px solid var(--border2);border-radius:var(--r-sm);font-size:14px;font-weight:500;color:var(--text);background:var(--bg2);padding:0 14px;outline:none;font-family:"Outfit",sans-serif}
+.add-bar input::placeholder{color:var(--text3)}
+.add-bar input:focus{border-color:var(--green)}
+.add-bar button{height:46px;padding:0 18px;background:var(--green);border:none;border-radius:var(--r-sm);color:#0A0A0A;font-size:15px;font-weight:700;cursor:pointer;font-family:"Outfit",sans-serif;flex-shrink:0}
+.add-bar .recipe-btn{height:46px;width:46px;padding:0;background:var(--violet-dim);border:1px solid var(--violet-border);border-radius:var(--r-sm);color:var(--violet);font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.add-bar .recipe-btn:active{background:var(--violet);color:#0A0A0A}
+
+/* List tab */
+.card-list{margin:12px 16px 0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.item-row{display:flex;align-items:center;padding:13px 15px;gap:12px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.item-row:last-child{border-bottom:none}
+.chk{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:transparent;transition:all .2s}
+.chk.done{background:var(--green);border-color:var(--green)}
+.chk svg{display:none}
+.chk.done svg{display:block}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:15px;font-weight:500;color:var(--text)}
+.item-name.done{color:var(--text3);text-decoration:line-through}
+.item-tag{font-size:11px;font-weight:600;color:var(--text3);margin-top:2px}
+.del{font-size:21px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:"Outfit",sans-serif;padding:2px 4px;line-height:1}
+
+/* Stores tab */
+.stores-wrap{padding:12px 16px 0}
+.search-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.search-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px}
+.sinput{width:100%;height:44px;border:1px solid var(--border2);border-radius:var(--r-sm);font-size:14px;font-weight:500;color:var(--text);background:var(--bg3);padding:0 13px;outline:none;font-family:"Outfit",sans-serif;margin-bottom:8px;display:block}
+.sinput::placeholder{color:var(--text3)}
+.sinput:focus{border-color:var(--green)}
+.srow{display:flex;gap:8px}
+.srow .sinput{margin-bottom:0;flex:1}
+.sbtn{height:44px;padding:0 16px;background:var(--green);border:none;border-radius:var(--r-sm);color:#0A0A0A;font-size:14px;font-weight:700;cursor:pointer;font-family:"Outfit",sans-serif;white-space:nowrap;flex-shrink:0}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.result-card:active{background:var(--bg3)}
+.result-name{font-size:14px;font-weight:600;color:var(--text);flex:1}
+.result-addr{font-size:12px;color:var(--text2);margin-top:2px}
+.add-lbl{font-size:13px;font-weight:700;color:var(--green);flex-shrink:0}
+.store-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;margin-bottom:10px;display:flex;align-items:center;gap:11px}
+.store-card.fav{border-color:var(--amber-border);background:var(--amber-dim)}
+.store-ico{font-size:24px;flex-shrink:0;position:relative}
+.store-star{position:absolute;top:-4px;right:-4px;font-size:12px}
+.store-info{flex:1;min-width:0}
+.store-name{font-size:15px;font-weight:700;color:var(--text)}
+.store-addr{font-size:12px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.stag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;border:none;cursor:pointer;font-family:"Outfit",sans-serif}
+.stag.aon{background:var(--green-dim);color:var(--green)}
+.stag.aoff{background:var(--bg4);color:var(--text3)}
+.stag.fon{background:var(--amber-dim);color:var(--amber)}
+.stag.foff{background:var(--bg4);color:var(--text3)}
+.stag.lon{background:var(--blue-dim);color:var(--blue)}
+.stag.loff{background:var(--bg4);color:var(--text3)}
+.store-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.toggle{width:42px;height:24px;border-radius:24px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--green)}
+.toggle.off{background:var(--bg4)}
+.toggle::after{content:"";position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.toggle.on::after{left:21px}
+.toggle.off::after{left:3px}
+.sdel{font-size:20px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:"Outfit",sans-serif}
+.radius-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);margin-bottom:2px}
+.radius-bar label{font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap}
+.radius-bar input[type=range]{flex:1;accent-color:var(--green)}
+.radius-bar span{font-size:12px;font-weight:700;color:var(--green);min-width:44px;text-align:right}
+
+/* Organize tab */
+.org-wrap{padding:12px 16px 0}
+.org-group{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.org-hdr{display:flex;align-items:center;padding:11px 14px;gap:9px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.org-hdr-ico{font-size:17px}
+.org-hdr-name{font-size:14px;font-weight:700;color:var(--text);flex:1}
+.org-hdr-count{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--bg4);color:var(--text2)}
+.org-row{display:flex;align-items:center;padding:12px 14px;gap:11px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.org-row:last-child{border-bottom:none}
+.org-name{flex:1;font-size:14px;font-weight:500;color:var(--text)}
+.org-sel{height:32px;border:1px solid var(--border2);border-radius:8px;font-size:12px;font-weight:600;color:var(--text);background:var(--bg3);padding:0 8px;outline:none;font-family:"Outfit",sans-serif;cursor:pointer;max-width:130px;-webkit-appearance:none}
+.org-sel:focus{border-color:var(--green)}
+
+.empty{text-align:center;padding:50px 24px;color:var(--text3);font-size:14px;line-height:1.8}
+.empty b{color:var(--text2);display:block;font-size:16px;margin-bottom:6px}
+.sec-label{padding:14px 20px 6px;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase}
+
+/* ── Recipe Modal ─────────────────────────────────────────────── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-backdrop.open{opacity:1;pointer-events:all}
+.modal-sheet{width:100%;max-width:430px;background:var(--bg2);border-radius:20px 20px 0 0;padding:0 0 max(20px,env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.modal-backdrop.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--bg4);margin:12px auto 0}
+.modal-title{font-size:17px;font-weight:700;padding:16px 20px 0;display:flex;align-items:center;gap:8px}
+.modal-title span{color:var(--violet)}
+.modal-subtitle{font-size:13px;color:var(--text3);padding:5px 20px 0;line-height:1.5}
+.modal-tabs{display:flex;gap:4px;padding:14px 20px 0}
+.modal-tab{flex:1;height:36px;border-radius:8px;border:1px solid var(--border);background:none;font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;font-family:"Outfit",sans-serif;transition:all .15s}
+.modal-tab.active{background:var(--violet-dim);color:var(--violet);border-color:var(--violet-border)}
+.modal-input-wrap{padding:14px 20px 0}
+.modal-textarea{width:100%;min-height:120px;max-height:200px;border:1px solid var(--border2);border-radius:var(--r-sm);font-size:14px;font-weight:500;color:var(--text);background:var(--bg3);padding:12px 14px;outline:none;font-family:"Outfit",sans-serif;resize:none;display:block}
+.modal-textarea::placeholder{color:var(--text3)}
+.modal-textarea:focus{border-color:var(--violet)}
+.modal-url{width:100%;height:46px;border:1px solid var(--border2);border-radius:var(--r-sm);font-size:14px;font-weight:500;color:var(--text);background:var(--bg3);padding:0 14px;outline:none;font-family:"Outfit",sans-serif;display:block}
+.modal-url::placeholder{color:var(--text3)}
+.modal-url:focus{border-color:var(--violet)}
+.modal-url-note{font-size:12px;color:var(--text3);margin-top:7px;padding:0 2px;line-height:1.5}
+.modal-actions{padding:16px 20px 0;display:flex;gap:8px}
+.modal-cancel{height:46px;flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text2);font-size:15px;font-weight:600;cursor:pointer;font-family:"Outfit",sans-serif}
+.modal-go{height:46px;flex:2;background:var(--violet);border:none;border-radius:var(--r-sm);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:"Outfit",sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+.modal-go:disabled{opacity:0.5;cursor:not-allowed}
+
+/* Recipe results preview */
+.recipe-preview{padding:14px 20px 0}
+.recipe-preview-title{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}
+.recipe-items{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
+.recipe-item-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)}
+.recipe-item-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--violet-border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:transparent;transition:all .15s}
+.recipe-item-check.sel{background:var(--violet);border-color:var(--violet)}
+.recipe-item-check svg{display:none}
+.recipe-item-check.sel svg{display:block}
+.recipe-item-name{flex:1;font-size:14px;font-weight:500;color:var(--text)}
+.recipe-add-btn{height:46px;width:100%;background:var(--violet);border:none;border-radius:var(--r-sm);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:"Outfit",sans-serif;margin-top:12px}
+.recipe-error{padding:14px 20px 0}
+.recipe-error-box{background:var(--red-dim);border:1px solid rgba(248,113,113,0.3);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--red);line-height:1.5}
+
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+/* Photo upload tab */
+.photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1.5px dashed var(--violet-border);border-radius:var(--r-sm);padding:28px 16px;cursor:pointer;background:var(--violet-dim);transition:all .15s;position:relative}
+.photo-drop:active{border-color:var(--violet);background:rgba(167,139,250,0.2)}
+.photo-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-drop-ico{font-size:32px;line-height:1}
+.photo-drop-label{font-size:14px;font-weight:600;color:var(--violet)}
+.photo-drop-sub{font-size:12px;color:var(--text3)}
+.photo-preview-wrap{position:relative;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--violet-border)}
+.photo-preview-wrap img{width:100%;max-height:160px;object-fit:cover;display:block}
+.photo-clear{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="header">
+    <h1>List<em>Alert</em></h1>
+    <button class="gps-btn wait" id="gpsbtn" onclick="startGPS()">
+      <span class="dot wait" id="gpsdot"></span>
+      <span id="gpstxt">Enable GPS</span>
+    </button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-list" onclick="show('list')">List</div>
+    <div class="tab" id="tab-stores" onclick="show('stores')">Stores</div>
+    <div class="tab" id="tab-organize" onclick="show('organize')">Organize</div>
+  </div>
+
+  <!-- LIST -->
+  <div class="view active" id="view-list">
+    <div id="notif-area"></div>
+    <div id="list-body"></div>
+  </div>
+
+  <!-- STORES -->
+  <div class="view" id="view-stores">
+    <div class="radius-bar">
+      <label>Alert radius</label>
+      <input type="range" id="radius-range" min="200" max="2000" step="100" value="800" oninput="setRadius(this.value)"/>
+      <span id="radius-lbl">800m</span>
+    </div>
+    <div class="stores-wrap">
+      <div class="search-block">
+        <div class="search-label">Find a store</div>
+        <input class="sinput" id="sname" placeholder="Store name (e.g. Kroger, Target...)"/>
+        <div class="srow">
+          <input class="sinput" id="szip" placeholder="Zip code (e.g. 75075)" maxlength="10"/>
+          <button class="sbtn" onclick="doSearch()">Search</button>
+        </div>
+      </div>
+      <div id="search-results"></div>
+      <div id="stores-list"></div>
+    </div>
+  </div>
+
+  <!-- ORGANIZE -->
+  <div class="view" id="view-organize">
+    <div class="org-wrap" id="org-body"></div>
+  </div>
+
+  <!-- Add bar: input + recipe button + add button -->
+  <div class="add-bar" id="add-bar">
+    <input id="item-input" placeholder="Add an item..." onkeydown="if(event.key==='Enter')addItem()"/>
+    <button class="recipe-btn" onclick="openRecipeModal()" title="Import from recipe">🍳</button>
+    <button onclick="addItem()">Add</button>
+  </div>
+
+</div>
+
+<!-- ── Recipe Modal ──────────────────────────────────────────── -->
+<!-- Hidden file input lives here permanently — never re-injected -->
+<input type="file" accept="image/*" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(this)"/>
+
+<div class="modal-backdrop" id="recipe-modal" onclick="closeRecipeModalBackdrop(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span>🍳</span> From a Recipe</div>
+    <div class="modal-subtitle">Paste recipe text or a URL — Claude will pull out the ingredients for you.</div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="rtab-paste" onclick="switchRecipeTab('paste')">Paste text</button>
+      <button class="modal-tab" id="rtab-url" onclick="switchRecipeTab('url')">URL</button>
+      <button class="modal-tab" id="rtab-photo" onclick="switchRecipeTab('photo')">📷 Photo</button>
+    </div>
+
+    <div class="modal-input-wrap" id="recipe-input-area">
+      <!-- filled by switchRecipeTab -->
+    </div>
+
+    <div id="recipe-result-area"></div>
+
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeRecipeModal()">Cancel</button>
+      <button class="modal-go" id="recipe-go-btn" onclick="runRecipeExtraction()">
+        <span id="recipe-go-label">Extract ingredients</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+var stores = JSON.parse(localStorage.getItem('la_stores') || '[]');
+var items  = JSON.parse(localStorage.getItem('la_items')  || '[]');
+var radius = parseInt(localStorage.getItem('la_radius')   || '800');
+var nid    = parseInt(localStorage.getItem('la_nid')      || '1');
+var watchId = null, lat = null, lng = null, ss = {}, curTab = 'list', searchResults = [];
+var EMOJIS = ['🛒','🏪','🥦','💊','🧴','🧺','🥩','🏬','🍎','🌿'];
+
+// Seed demo data
+if (!stores.length) {
+  stores = [
+    {id:1,name:'Kroger',addr:'Legacy Dr, Plano TX 75024',emoji:'🛒',geo:true,fav:true,lat:null,lng:null},
+    {id:2,name:'Whole Foods',addr:'Preston Rd, Dallas TX 75093',emoji:'🥦',geo:true,fav:false,lat:null,lng:null},
+    {id:3,name:'CVS',addr:'Parker Rd, Plano TX 75023',emoji:'💊',geo:false,fav:false,lat:null,lng:null}
+  ];
+  items = [
+    {id:1,name:'Eggs',store:1,done:false},
+    {id:2,name:'Salmon',store:2,done:false},
+    {id:3,name:'Face cream',store:3,done:false},
+    {id:4,name:'Milk',store:1,done:false},
+    {id:5,name:'Spinach',store:null,done:false}
+  ];
+  nid = 10;
+  persist();
+}
+
+document.getElementById('radius-range').value = radius;
+document.getElementById('radius-lbl').textContent = radius + 'm';
+
+function persist() {
+  localStorage.setItem('la_stores', JSON.stringify(stores));
+  localStorage.setItem('la_items',  JSON.stringify(items));
+  localStorage.setItem('la_radius', radius);
+  localStorage.setItem('la_nid',    nid);
+}
+
+// ── Tabs ───────────────────────────────────────────────────────
+function show(t) {
+  curTab = t;
+  ['list','stores','organize'].forEach(function(n) {
+    document.getElementById('tab-' + n).classList.toggle('active', n === t);
+    document.getElementById('view-' + n).classList.toggle('active', n === t);
+  });
+  document.getElementById('add-bar').style.display = t === 'list' ? 'flex' : 'none';
+  if (t === 'list')     renderList();
+  if (t === 'stores')   renderStores();
+  if (t === 'organize') renderOrganize();
+}
+
+// ── GPS ────────────────────────────────────────────────────────
+function startGPS() {
+  if (!navigator.geolocation) { setGPS('off', 'No GPS'); return; }
+  setGPS('wait', 'Locating...');
+  navigator.geolocation.getCurrentPosition(function(p) {
+    lat = p.coords.latitude; lng = p.coords.longitude;
+    setGPS('on', 'GPS active');
+    if (!watchId) watchId = navigator.geolocation.watchPosition(function(p) {
+      lat = p.coords.latitude; lng = p.coords.longitude; checkFences();
+    }, null, {enableHighAccuracy:true, maximumAge:10000});
+    checkFences();
+    if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+  }, function() { setGPS('off', 'GPS denied'); }, {enableHighAccuracy:true, timeout:15000});
+}
+
+function setGPS(state, txt) {
+  document.getElementById('gpsbtn').className = 'gps-btn ' + state;
+  document.getElementById('gpsdot').className = 'dot ' + state;
+  document.getElementById('gpstxt').textContent = txt;
+}
+
+// ── Geofencing ─────────────────────────────────────────────────
+function dist(a, b, c, d) {
+  var R=6371000, dL=(c-a)*Math.PI/180, dN=(d-b)*Math.PI/180;
+  var x = Math.sin(dL/2)*Math.sin(dL/2) + Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2);
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+}
+
+function checkFences() {
+  if (lat === null) return;
+  stores.forEach(function(s) {
+    if (!s.geo || s.lat === null) return;
+    var d = dist(lat, lng, s.lat, s.lng);
+    var pending = items.filter(function(i) { return i.store === s.id && !i.done; });
+    var st = ss[s.id] || (ss[s.id] = {inside:false, alerted:false});
+    if (d <= radius) {
+      if (!st.inside) {
+        st.inside = true;
+        if (pending.length && !st.alerted) { st.alerted = true; fireAlert(s, pending); }
+      }
+    } else if (d > radius * 1.5) {
+      st.inside = false; st.alerted = false;
+    }
+  });
+}
+
+function fireAlert(store, pending) {
+  var names = pending.map(function(i) { return i.name; }).join(', ');
+  showBanner(store, names);
+  if (window.Notification && Notification.permission === 'granted') {
+    var n = new Notification('Near ' + store.name, {body: 'Still need: ' + names, tag: 'la-' + store.id, requireInteraction: true});
+    n.onclick = function() { gotIt(store.id); };
+  }
+}
+
+function gotIt(sid) {
+  if (ss[sid]) ss[sid].alerted = true;
+  document.getElementById('notif-area').innerHTML = '';
+  show('list');
+}
+
+function notNow(sid) {
+  if (ss[sid]) { ss[sid].alerted = false; ss[sid].inside = false; }
+  document.getElementById('notif-area').innerHTML = '';
+}
+
+function showBanner(store, names) {
+  document.getElementById('notif-area').innerHTML =
+    '<div class="notif">' +
+    '<span class="notif-ico">' + store.emoji + '</span>' +
+    '<div style="flex:1">' +
+    '<div class="notif-title">You are near ' + store.name + '</div>' +
+    '<div class="notif-body">Still need: ' + names + '</div>' +
+    '<div class="notif-btns">' +
+    '<button class="nbtn p" onclick="gotIt(' + store.id + ')">Got it</button>' +
+    '<button class="nbtn" onclick="notNow(' + store.id + ')">Not this time</button>' +
+    '</div></div></div>';
+}
+
+// ── Store search ───────────────────────────────────────────────
+function doSearch() {
+  var name = document.getElementById('sname').value.trim();
+  var zip  = document.getElementById('szip').value.trim();
+  if (!name) { alert('Enter a store name.'); return; }
+  var q = name + (zip ? ' ' + zip : '');
+  var res = document.getElementById('search-results');
+  res.innerHTML = '<div class="empty">Searching...</div>';
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&q=' + encodeURIComponent(q), {headers:{'Accept-Language':'en'}})
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.length) { res.innerHTML = '<div class="empty">No results. Try a different name or zip.</div>'; return; }
+      searchResults = [];
+      data.forEach(function(p) {
+        var parts = p.display_name.split(',');
+        var pname = parts[0].trim();
+        var addr  = parts.slice(1, 4).join(',').trim();
+        var zc    = (p.address && p.address.postcode) ? p.address.postcode : zip;
+        if (zc && addr.indexOf(zc) === -1) addr += ' ' + zc;
+        searchResults.push({name: pname, addr: addr, lat: parseFloat(p.lat), lng: parseFloat(p.lon)});
+      });
+      var html = '';
+      searchResults.forEach(function(r, i) {
+        html += '<div class="result-card" onclick="addResult(' + i + ')">';
+        html += '<div style="flex:1"><div class="result-name">' + r.name + '</div>';
+        html += '<div class="result-addr">' + r.addr + '</div></div>';
+        html += '<span class="add-lbl">+ Add</span></div>';
+      });
+      res.innerHTML = html;
+    })
+    .catch(function() { res.innerHTML = '<div class="empty" style="color:var(--red)">Search failed. Check connection.</div>'; });
+}
+
+function addResult(idx) {
+  var r = searchResults[idx];
+  if (!r) return;
+  var exists = stores.find(function(s) { return s.name === r.name && s.addr === r.addr; });
+  if (exists) { alert(r.name + ' is already saved.'); return; }
+  stores.push({id:nid++, name:r.name, addr:r.addr, emoji:EMOJIS[stores.length % EMOJIS.length], geo:true, fav:false, lat:r.lat, lng:r.lng});
+  persist();
+  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('sname').value = '';
+  document.getElementById('szip').value = '';
+  renderStores();
+}
+
+// ── Stores render ──────────────────────────────────────────────
+function renderStores() {
+  var el = document.getElementById('stores-list');
+  if (!stores.length) { el.innerHTML = '<div class="empty"><b>No stores yet</b>Search above to add one.</div>'; return; }
+  var sorted = stores.slice().sort(function(a,b) { return (b.fav?1:0)-(a.fav?1:0); });
+  el.innerHTML = sorted.map(function(s) {
+    var pending = items.filter(function(i) { return i.store === s.id && !i.done; }).length;
+    return '<div class="store-card' + (s.fav?' fav':'') + '">' +
+      '<div class="store-ico">' + s.emoji + (s.fav ? '<span class="store-star">⭐</span>' : '') + '</div>' +
+      '<div class="store-info">' +
+        '<div class="store-name">' + s.name + '</div>' +
+        '<div class="store-addr">' + (s.addr || '') + '</div>' +
+        '<div class="store-tags">' +
+          '<span class="stag ' + (s.geo?'aon':'aoff') + '">' + (s.geo?'Alerts on':'Alerts off') + '</span>' +
+          '<button class="stag ' + (s.fav?'fon':'foff') + '" onclick="toggleFav(' + s.id + ')">' + (s.fav?'★ Fav':'☆ Fav') + '</button>' +
+          (s.lat !== null ? '<span class="stag lon">📍 Pinned</span>' : '<button class="stag loff" onclick="pinHere(' + s.id + ')">Pin location</button>') +
+        '</div>' +
+      '</div>' +
+      '<div class="store-right">' +
+        '<button class="toggle ' + (s.geo?'on':'off') + '" onclick="toggleGeo(' + s.id + ')"></button>' +
+        '<button class="sdel" onclick="delStore(' + s.id + ')">×</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleGeo(id) { var s=stores.find(function(s){return s.id===id;}); if(s){s.geo=!s.geo;persist();renderStores();} }
+function toggleFav(id) { var s=stores.find(function(s){return s.id===id;}); if(s){s.fav=!s.fav;persist();renderStores();} }
+function delStore(id) {
+  if (!confirm('Remove this store?')) return;
+  stores = stores.filter(function(s){return s.id!==id;});
+  items.forEach(function(i){if(i.store===id)i.store=null;});
+  persist(); renderStores();
+}
+function pinHere(id) {
+  if (lat === null) { alert('Enable GPS first, then tap Pin location.'); return; }
+  var s = stores.find(function(s){return s.id===id;});
+  if (s) { s.lat=lat; s.lng=lng; persist(); renderStores(); alert(s.name + ' pinned!'); }
+}
+function setRadius(v) {
+  radius = parseInt(v);
+  document.getElementById('radius-lbl').textContent = v + 'm';
+  persist();
+}
+
+// ── List render ────────────────────────────────────────────────
+function renderList() {
+  var el = document.getElementById('list-body');
+  if (!items.length) { el.innerHTML = '<div class="empty"><b>List is empty</b>Add items below.</div>'; return; }
+  var sm = {}; stores.forEach(function(s){sm[s.id]=s;});
+  el.innerHTML = '<div class="card-list">' + items.map(function(it) {
+    var s = sm[it.store]; var badge = s ? s.emoji + ' ' + s.name : '';
+    return '<div class="item-row">' +
+      '<div class="chk' + (it.done?' done':'') + '" onclick="toggleItem(' + it.id + ')">' +
+        '<svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 3.5L4 6.5L10 1" stroke="#0A0A0A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '</div>' +
+      '<div class="item-info">' +
+        '<div class="item-name' + (it.done?' done':'') + '">' + it.name + '</div>' +
+        (badge ? '<div class="item-tag">' + badge + '</div>' : '') +
+      '</div>' +
+      '<button class="del" onclick="delItem(' + it.id + ')">×</button>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function addItem() {
+  var input = document.getElementById('item-input');
+  var name = input.value.trim();
+  if (!name) return;
+  items.push({id:nid++, name:name, store:null, done:false});
+  input.value = ''; persist(); renderList(); input.focus();
+}
+function toggleItem(id) { var it=items.find(function(i){return i.id===id;}); if(it){it.done=!it.done;persist();renderList();} }
+function delItem(id) { items=items.filter(function(i){return i.id!==id;}); persist(); renderList(); }
+
+// ── Organize render ────────────────────────────────────────────
+function renderOrganize() {
+  var el = document.getElementById('org-body');
+  if (!items.length) { el.innerHTML = '<div class="empty"><b>Nothing to organize</b>Add items on the List tab first.</div>'; return; }
+  var grouped = {}; stores.forEach(function(s){grouped[s.id]=[];});
+  var unassigned = [];
+  items.forEach(function(it) {
+    if (it.store && grouped[it.store] !== undefined) grouped[it.store].push(it);
+    else unassigned.push(it);
+  });
+  var html = '';
+  if (unassigned.length) {
+    html += '<div class="sec-label">Not assigned</div><div class="org-group">' +
+      unassigned.map(function(it){return orgRow(it);}).join('') + '</div>';
+  }
+  stores.forEach(function(s) {
+    var its = grouped[s.id] || [];
+    if (!its.length) return;
+    var left = its.filter(function(i){return !i.done;}).length;
+    html += '<div class="org-group">' +
+      '<div class="org-hdr"><span class="org-hdr-ico">' + s.emoji + '</span><span class="org-hdr-name">' + s.name + '</span><span class="org-hdr-count">' + left + ' left</span></div>' +
+      its.map(function(it){return orgRow(it);}).join('') +
+    '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function orgRow(it) {
+  var opts = '<option value="">No store</option>' + stores.map(function(s) {
+    return '<option value="' + s.id + '"' + (it.store===s.id?' selected':'') + '>' + s.emoji + ' ' + s.name + '</option>';
+  }).join('');
+  return '<div class="org-row"><span class="org-name">' + it.name + '</span>' +
+    '<select class="org-sel" onchange="assign(' + it.id + ',this.value)">' + opts + '</select></div>';
+}
+
+function assign(itemId, storeId) {
+  var it = items.find(function(i){return i.id===itemId;});
+  if (it) { it.store = storeId ? parseInt(storeId) : null; persist(); renderOrganize(); renderList(); }
+}
+
+// ── Recipe Modal ───────────────────────────────────────────────
+var recipeTab = 'paste';
+var extractedIngredients = []; // [{name, selected}]
+var recipeLoading = false;
+var recipePhotoBase64 = null;  // base64 string of selected image
+var recipePhotoMime = 'image/jpeg';
+
+function openRecipeModal() {
+  recipeTab = 'paste';
+  extractedIngredients = [];
+  recipePhotoBase64 = null;
+  document.getElementById('recipe-result-area').innerHTML = '';
+  document.getElementById('recipe-modal').classList.add('open');
+  switchRecipeTab('paste');
+  resetGoBtn();
+}
+
+function closeRecipeModal() {
+  document.getElementById('recipe-modal').classList.remove('open');
+}
+
+function closeRecipeModalBackdrop(e) {
+  if (e.target === document.getElementById('recipe-modal')) closeRecipeModal();
+}
+
+function switchRecipeTab(tab) {
+  recipeTab = tab;
+  document.getElementById('rtab-paste').classList.toggle('active', tab === 'paste');
+  document.getElementById('rtab-url').classList.toggle('active', tab === 'url');
+  document.getElementById('rtab-photo').classList.toggle('active', tab === 'photo');
+  document.getElementById('recipe-result-area').innerHTML = '';
+  extractedIngredients = [];
+  recipePhotoBase64 = null;
+  resetGoBtn();
+
+  var area = document.getElementById('recipe-input-area');
+  if (tab === 'paste') {
+    area.innerHTML = '<textarea class="modal-textarea" id="recipe-text" placeholder="Paste your recipe here — ingredients, steps, anything. Claude will find the ingredients."></textarea>';
+  } else if (tab === 'url') {
+    area.innerHTML = '<input class="modal-url" id="recipe-url" type="url" placeholder="https://www.allrecipes.com/recipe/..."/>' +
+      '<div class="modal-url-note">⚠️ Some recipe sites block outside requests. If it fails, paste the text instead.</div>';
+  } else {
+    area.innerHTML =
+      '<div class="photo-drop" id="photo-drop-zone" onclick="document.getElementById(\'photo-file-input\').click()">' +
+        '<div class="photo-drop-ico">📷</div>' +
+        '<div class="photo-drop-label">Tap to take or choose a photo</div>' +
+        '<div class="photo-drop-sub">Recipe card, cookbook page, screenshot — anything with ingredients</div>' +
+      '</div>';
+  }
+}
+
+function resetGoBtn() {
+  var btn = document.getElementById('recipe-go-btn');
+  btn.disabled = false;
+  document.getElementById('recipe-go-label').textContent = 'Extract ingredients';
+  btn.innerHTML = '<span id="recipe-go-label">Extract ingredients</span>';
+}
+
+function setGoBtnLoading() {
+  var btn = document.getElementById('recipe-go-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div><span>Extracting...</span>';
+}
+
+// ── Photo handling ─────────────────────────────────────────────
+function handlePhotoSelect(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  recipePhotoMime = file.type && file.type.startsWith('image/') ? file.type : 'image/jpeg';
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    recipePhotoBase64 = dataUrl.split(',')[1];
+
+    var area = document.getElementById('recipe-input-area');
+    area.innerHTML =
+      '<div class="photo-preview-wrap">' +
+        '<img src="' + dataUrl + '" alt="Recipe photo"/>' +
+        '<button class="photo-clear" onclick="clearPhoto()">×</button>' +
+      '</div>';
+  };
+  reader.onerror = function() {
+    showRecipeError('Could not read that image. Try a different file.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPhoto() {
+  recipePhotoBase64 = null;
+  document.getElementById('photo-file-input').value = '';
+  switchRecipeTab('photo');
+}
+
+async function runRecipeExtraction() {
+  if (recipeLoading) return;
+
+  // If we already have results shown, this is the "Add to list" phase
+  if (extractedIngredients.length) { addExtractedToList(); return; }
+
+  recipeLoading = true;
+  setGoBtnLoading();
+  document.getElementById('recipe-result-area').innerHTML = '';
+
+  var messages;
+
+  if (recipeTab === 'photo') {
+    if (!recipePhotoBase64) { alert('Choose a photo first.'); recipeLoading = false; resetGoBtn(); return; }
+    messages = [{
+      role: 'user',
+      content: [
+        {
+          type: 'image',
+          source: { type: 'base64', media_type: recipePhotoMime, data: recipePhotoBase64 }
+        },
+        {
+          type: 'text',
+          text: 'This is a photo of a recipe. Extract only the ingredient names. Return ONLY a JSON array of strings — clean grocery store names, no quantities, no measurements, no prep notes. Example: ["Flour","Butter","Eggs","Garlic"]. If you cannot find any ingredients, return [].'
+        }
+      ]
+    }];
+  } else {
+    var input = '';
+    if (recipeTab === 'paste') {
+      input = (document.getElementById('recipe-text') || {}).value || '';
+      input = input.trim();
+      if (!input) { alert('Paste some recipe text first.'); recipeLoading = false; resetGoBtn(); return; }
+    } else {
+      var url = (document.getElementById('recipe-url') || {}).value || '';
+      url = url.trim();
+      if (!url) { alert('Enter a URL first.'); recipeLoading = false; resetGoBtn(); return; }
+      input = 'Recipe URL: ' + url;
+    }
+
+    var prompt = recipeTab === 'paste'
+      ? 'Extract only the ingredient names from this recipe. Return ONLY a JSON array of strings — clean, simple grocery store names with no quantities, no measurements, no prep notes. Example: ["Flour","Butter","Eggs","Garlic"]. Recipe:\n\n' + input
+      : 'The user wants to import a recipe from this URL: ' + input.replace('Recipe URL: ', '') + '\n\nYou cannot fetch URLs, so respond with a JSON object: {"error": "url_unsupported"}. Do not attempt to guess or fabricate ingredients.';
+
+    messages = [{ role: 'user', content: prompt }];
+  }
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are a grocery list assistant. When asked to extract ingredients, return ONLY a raw JSON array of strings. No markdown, no explanation, no backticks. Just the array.',
+        messages: messages
+      })
+    });
+
+    var data = await response.json();
+    var raw = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
+
+    // Strip any accidental markdown fences
+    raw = raw.replace(/```json|```/g, '').trim();
+
+    // Check for url_unsupported error object
+    if (raw.indexOf('"url_unsupported"') !== -1) {
+      showRecipeError('This URL couldn\'t be fetched automatically. Please open the recipe page, select all the text, copy it, and paste it using the "Paste text" tab instead.');
+      recipeLoading = false;
+      resetGoBtn();
+      return;
+    }
+
+    var parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.length) throw new Error('empty');
+
+    // Deduplicate and clean
+    var seen = {};
+    extractedIngredients = parsed
+      .filter(function(name) {
+        var k = name.toLowerCase();
+        if (seen[k]) return false;
+        seen[k] = true;
+        return typeof name === 'string' && name.trim();
+      })
+      .map(function(name) { return { name: name.trim(), selected: true }; });
+
+    showRecipeResults();
+
+  } catch(e) {
+    var errMsg = recipeTab === 'photo'
+      ? 'Couldn\'t read ingredients from this photo. Try a clearer shot with better lighting, or paste the recipe text instead.'
+      : 'Couldn\'t parse the ingredients. Try pasting more of the recipe text, or make sure it includes a clear ingredient list.';
+    showRecipeError(errMsg);
+    resetGoBtn();
+  }
+
+  recipeLoading = false;
+}
+
+function showRecipeResults() {
+  var area = document.getElementById('recipe-result-area');
+  var rows = extractedIngredients.map(function(ing, i) {
+    return '<div class="recipe-item-row">' +
+      '<div class="recipe-item-check sel" id="rchk-' + i + '" onclick="toggleIngredient(' + i + ')">' +
+        '<svg width="10" height="7" viewBox="0 0 10 7" fill="none"><path d="M1 3L3.5 5.5L9 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '</div>' +
+      '<span class="recipe-item-name">' + ing.name + '</span>' +
+    '</div>';
+  }).join('');
+
+  area.innerHTML = '<div class="recipe-preview">' +
+    '<div class="recipe-preview-title">' + extractedIngredients.length + ' ingredients found — tap to deselect</div>' +
+    '<div class="recipe-items">' + rows + '</div>' +
+  '</div>';
+
+  // Change the Go button to "Add to list"
+  var btn = document.getElementById('recipe-go-btn');
+  btn.disabled = false;
+  btn.innerHTML = '<span id="recipe-go-label">Add to list</span>';
+}
+
+function toggleIngredient(i) {
+  extractedIngredients[i].selected = !extractedIngredients[i].selected;
+  var chk = document.getElementById('rchk-' + i);
+  chk.classList.toggle('sel', extractedIngredients[i].selected);
+}
+
+function addExtractedToList() {
+  var toAdd = extractedIngredients.filter(function(i) { return i.selected; });
+  if (!toAdd.length) { alert('Select at least one ingredient.'); return; }
+  toAdd.forEach(function(ing) {
+    items.push({ id: nid++, name: ing.name, store: null, done: false });
+  });
+  persist();
+  renderList();
+  closeRecipeModal();
+}
+
+function showRecipeError(msg) {
+  document.getElementById('recipe-result-area').innerHTML =
+    '<div class="recipe-error"><div class="recipe-error-box">' + msg + '</div></div>';
+}
+
+// ── Init ───────────────────────────────────────────────────────
+renderList();
+show('list');
+</script>
+</body>
+</html>
