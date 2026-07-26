@@ -30,7 +30,7 @@
 <p>This Privacy Policy describes how ListAlert ("we," "us," or "our") collects, uses, shares, and protects information when you use the ListAlert mobile application and associated services (the "Service"). We are committed to handling your information with transparency and minimal footprint.</p>
 
 <div class="notice">
-  <strong>The short version.</strong> ListAlert stores your grocery list and recipes on your device. We use anonymous authentication — no name or email required. Location data is only collected when you explicitly turn on a GPS alert for a specific store. We do not sell your data. When you tap "Add to Kroger" or "Send to Instacart," only the ingredient names you selected are transmitted to that retailer's platform; we never see your retailer credentials, payment info, or order history.
+  <strong>The short version.</strong> ListAlert stores your grocery list and recipes on your device, and — when you join a household — also syncs them (including recipe photos) to our secure Supabase database so everyone in your household shares one list. We use anonymous authentication — no name or email required. Background location for GPS store alerts is processed on your device and not sent to us; when you search for a store, your location is sent through our server to Google to find nearby results. We do not sell your data. When you tap "Add to Kroger" (or send your list to another supported retailer), only the ingredient names you selected are transmitted to that retailer's platform; we never see your retailer credentials, payment info, or order history.
 </div>
 
 <h2>1. Who We Are</h2>
@@ -44,14 +44,14 @@
   <li><strong>Recipes</strong> — recipes you save, including photos you upload, URLs you paste, or text you type. Extracted ingredients, cuisine type, cook time, and vibe tags.</li>
   <li><strong>Household information</strong> — the display name you choose when creating or joining a household, and the display names of other household members you can see.</li>
   <li><strong>Store preferences</strong> — the name, address, and GPS coordinates of stores you save and favorite.</li>
-  <li><strong>Email address (optional)</strong> — only if you choose to sign up for product updates via the in-app banner. Never required.</li>
+  <li><strong>Email address (optional)</strong> — only if you choose to sign up for product updates. This is never required, and the email sign-up feature is not currently enabled in the app.</li>
 </ul>
 
 <h3>2.2 Information collected automatically</h3>
 <ul>
   <li><strong>Anonymous session identifier</strong> — when you first launch the app, an anonymous Supabase user ID is generated for your device. This ID has no connection to your name, email, or any other personal identifier unless you later link an email.</li>
-  <li><strong>Device location (opt-in only)</strong> — ListAlert requests background location permission only when you enable a GPS proximity alert for a specific store. If you never enable GPS alerts, we never collect location data. When enabled, the app uses geofencing to detect when you are near a saved store and sends you a local notification. Location coordinates are not transmitted to our servers or shared with third parties.</li>
-  <li><strong>Purchase and trip history</strong> — when you end a shopping trip, the app records the list of completed item names and the trip duration. This data is stored locally on your device only.</li>
+  <li><strong>Device location</strong> — used in two distinct ways. <em>(1) Background proximity alerts (opt-in):</em> ListAlert requests background location permission only when you enable a GPS alert for a store. When enabled, geofencing runs on your device's operating system to detect when you are near a saved store and fire a local notification; these background coordinates are not transmitted to our servers or shared with third parties. <em>(2) Store search:</em> when you actively search for a nearby store, your current coordinates are sent through our Cloudflare Worker to the Google Places API to return nearby results (see Section 5.3). If you never enable GPS alerts and never search for a store, we do not collect location.</li>
+  <li><strong>Purchase and trip history</strong> — when you end a shopping trip, the app records the list of completed item names and the trip duration; this history is stored locally on your device. If you belong to a household, the items and checked-off state of your <em>active</em> shared shopping trip are also stored in our Supabase database so household members share one live trip (see Section 4.2).</li>
   <li><strong>Crash and diagnostic data</strong> — when the app crashes, a crash report is automatically transmitted via Sentry (our crash-monitoring service). These reports include device model, OS version, app version, a stack trace, and touch-event breadcrumbs (a record of which UI elements were tapped before the crash). They do not include your list contents, location, or account information.</li>
 </ul>
 
@@ -112,7 +112,7 @@
 <h2>4. Data Storage and Where It Lives</h2>
 
 <h3>4.1 On your device</h3>
-<p>The following data lives exclusively on your device in React Native AsyncStorage:</p>
+<p>The following data is stored on your device in React Native AsyncStorage. Note that your grocery list and saved recipes (including photos) are <em>also</em> synced to our Supabase database when you belong to a household — see Section 4.2:</p>
 <ul>
   <li>Your full grocery list and all item details</li>
   <li>Your recipe catalog, including saved photos</li>
@@ -121,8 +121,8 @@
   <li>Store preferences and GPS alert settings</li>
   <li>Kroger OAuth tokens (stored in the device's encrypted secure storage)</li>
 </ul>
-<p>Your Supabase session token (the JWT used to authenticate requests to our backend) is also stored on your device. Unlike Kroger OAuth tokens — which use the OS-level encrypted keychain — the session token is stored in standard unencrypted app storage. On a rooted or jailbroken device this data could potentially be read by other software.</p>
-<p>This data is not automatically backed up to our servers. If you uninstall the app or clear app data, this information is permanently deleted.</p>
+<p>Your Supabase session token (the JWT used to authenticate requests to our backend) is also stored on your device, in the operating system's encrypted secure storage (iOS Keychain / Android Keystore via <code>expo-secure-store</code>) — the same protection used for Kroger OAuth tokens.</p>
+<p>On-device data that is not part of household sync (for example, trip history, allergy and exclusion lists, and store preferences) is not backed up to our servers; if you uninstall the app or clear app data, that local data is deleted. Data that was synced to your household (your list, recipes, and recipe photos) remains in Supabase until removed as described in Section 7.</p>
 
 <h3>4.2 In our cloud database (Supabase)</h3>
 <p>The following data is stored in our Supabase database to enable household sync. It is protected by Row Level Security (RLS), meaning each user can only access data belonging to their own household:</p>
@@ -130,8 +130,12 @@
   <li>Anonymous user IDs (Supabase Auth)</li>
   <li>Household records: name, invite code</li>
   <li>Household membership: user ID, display name, role (admin / shopper / contributor)</li>
-  <li>Email addresses submitted via the optional signup banner</li>
+  <li>Grocery list items: item name, category, store tag, and completion/recurring status (synced so your household shares one list)</li>
+  <li>Saved recipes: name, ingredients, tags, source, cuisine, cook time, and vibe (synced for the shared household cookbook)</li>
+  <li>Recipe photos: stored as files in a private Supabase Storage bucket (<code>recipe-images</code>)</li>
+  <li>Active shared shopping trips: the trip's item list and checked-off state (synced for real-time household coordination)</li>
   <li>Household meal plans: selected recipe IDs and slot count (synced for household coordination)</li>
+  <li>Email addresses, if submitted via the optional product-update sign-up (this feature is not currently enabled in the app)</li>
 </ul>
 <p>Supabase servers are hosted in the United States. See <a href="https://supabase.com/privacy" target="_blank">Supabase's Privacy Policy</a>.</p>
 
@@ -175,13 +179,15 @@
 <h3>5.2 AI recipe extraction — Anthropic</h3>
 <p>When you extract a recipe, the photo or text you submit is sent through our Cloudflare Worker (which verifies your session token and holds our Anthropic API key server-side) to Anthropic's Claude API. Only the submitted content is transmitted — your name, email, user ID, location, and grocery list are not included. Anthropic's use of this data is governed by <a href="https://www.anthropic.com/privacy" target="_blank">Anthropic's Privacy Policy</a>. Per Anthropic's API terms, inputs submitted via the API are not used to train models. We do not independently process or use your submitted recipe content for any purpose other than returning the extracted ingredient list to you.</p>
 
-<h3>5.3 Store search — Google Places</h3>
-<p>When you search for a grocery store, your search query and your current device coordinates (latitude and longitude) are transmitted to the Google Places API to bias results toward stores near you. Google may associate this data with your IP address. See <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
+<p><strong>AI recipe images.</strong> If you choose to generate an illustrative image for a recipe, the recipe name and prompt are sent through our Cloudflare Worker to Cloudflare's Workers AI image model. The generated image is saved with your recipe (in Supabase Storage and/or on your device). No account identity, email, or location is included in this request.</p>
+
+<h3>5.3 Store search — Google Places (via our Worker)</h3>
+<p>When you search for a grocery store, your search query and your current device coordinates (latitude and longitude) are sent to our Cloudflare Worker, which forwards them to the Google Places API to bias results toward stores near you. Because the request is proxied server-side, Google receives our Worker's IP address rather than your device's IP. See <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
 
 <h3>5.4 Infrastructure providers</h3>
 <ul>
-  <li><strong>Supabase</strong> — authentication and household data storage. <a href="https://supabase.com/privacy" target="_blank">Privacy Policy</a></li>
-  <li><strong>Cloudflare</strong> — secure server-side proxy for AI and Kroger OAuth token exchange. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Privacy Policy</a></li>
+  <li><strong>Supabase</strong> — authentication, household data storage, and file storage for recipe images. <a href="https://supabase.com/privacy" target="_blank">Privacy Policy</a></li>
+  <li><strong>Cloudflare</strong> — secure server-side proxy for AI recipe extraction (Anthropic), AI image generation (Workers AI), Google Places store search, and Kroger OAuth token exchange. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Privacy Policy</a></li>
   <li><strong>Sentry</strong> — crash monitoring (crash reports only, no list or location data). <a href="https://sentry.io/privacy/" target="_blank">Privacy Policy</a></li>
   <li><strong>Expo / EAS</strong> — over-the-air app updates. On each app launch, the app checks Expo's update servers (<code>u.expo.dev</code>) for available updates; your app version, platform, and update channel are transmitted. <a href="https://expo.dev/privacy" target="_blank">Privacy Policy</a></li>
 </ul>
@@ -193,7 +199,7 @@
 <p>Location is the most sensitive data type ListAlert touches. Here is exactly how it works:</p>
 <ul>
   <li><strong>Background location is opt-in at the store level.</strong> When you save a store and tap "Set GPS alert," the app requests the "always on" location permission so it can detect when you are nearby — even when the app is in the background. If you do not tap that toggle, ListAlert never requests background location permission.</li>
-  <li><strong>Location is processed entirely on-device.</strong> The geofencing logic runs on your device's operating system. Your GPS coordinates are not transmitted to ListAlert's servers, to any retailer, or to any third party.</li>
+  <li><strong>Background alert location is processed on-device.</strong> The geofencing logic for proximity alerts runs on your device's operating system, and those background GPS coordinates are not transmitted to ListAlert's servers, to any retailer, or to any third party. Store <em>search</em> is separate: when you look up a nearby store, your coordinates are sent through our Worker to Google Places (see Section 5.3).</li>
   <li><strong>Alerts are local notifications.</strong> When the system detects you are within the configured radius of a saved store, your device fires a local notification. This requires no round-trip to a server.</li>
   <li><strong>You can revoke at any time.</strong> Disable location permission for ListAlert in your device's Settings → ListAlert → Location. All GPS alerts will stop immediately.</li>
 </ul>
