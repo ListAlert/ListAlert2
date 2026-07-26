@@ -75,9 +75,10 @@
 
 <h3>4.4 AI-Powered Recipe Extraction</h3>
 <p>Recipe extraction uses Claude, an AI model operated by Anthropic, PBC. When you submit a photo, URL, or text for recipe extraction, that content is transmitted to our secure server-side proxy and then to Anthropic for processing. We do not share your name, account identity, or personal details with Anthropic. See Section 6 and our Privacy Policy for more detail.</p>
+<p>ListAlert also offers optional AI image generation: if you generate an illustrative picture for a recipe, the recipe name and prompt are sent through our proxy to Cloudflare's Workers AI. No account identity or personal details are sent.</p>
 
 <h3>4.5 Google Places</h3>
-<p>Store search is powered by the Google Places API. When you search for a store, your search query and approximate location may be transmitted to Google. Google's use of this data is governed by <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
+<p>Store search is powered by the Google Places API, called through our server-side Cloudflare Worker. When you search for a store, your search query and current location are sent to Google (via our Worker) to return nearby results. Google's use of this data is governed by <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
 
 <h2>5. Acceptable Use</h2>
 <p>You agree not to:</p>
@@ -94,7 +95,7 @@
 <p>Your privacy matters. Our full data practices are described in the <a href="privacy.html">ListAlert Privacy Policy</a>, which is incorporated into these Terms by reference. Key points:</p>
 <ul>
   <li>Your list, recipe, and household data is stored locally on your device and, for household sync, in our Supabase-hosted database protected by Row Level Security.</li>
-  <li>Location data (GPS) is collected only when you explicitly enable a proximity alert for a specific store.</li>
+  <li>Background location (GPS) is used only when you enable a proximity alert for a store, and is processed on your device. Your location is also sent to Google (via our server) when you actively search for a nearby store.</li>
   <li>Email is optional and collected only if you opt in.</li>
   <li>We do not sell your personal data.</li>
 </ul>
