@@ -78,10 +78,13 @@
     .tag-soon { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--accent-ink); background: var(--tint); border-radius: 6px; padding: 2px 7px; margin-left: 6px; vertical-align: middle; }
 
     /* Steps */
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; counter-reset: step; }
-    @media (max-width: 720px) { .steps { grid-template-columns: 1fr; } }
-    .step { position: relative; padding-top: 8px; }
-    .step .num { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .steps { max-width: 640px; margin: 0 auto; }
+    .step { position: relative; display: flex; gap: 20px; padding-bottom: 30px; }
+    .step:last-child { padding-bottom: 0; }
+    /* connector line joining each step to the next */
+    .step:not(:last-child)::before { content: ""; position: absolute; left: 18px; top: 46px; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--accent) 0%, var(--line) 90%); }
+    .step .num { flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; box-shadow: 0 2px 6px rgba(193,123,42,0.25); }
+    .step-body { padding-top: 5px; }
     .step h3 { margin: 0 0 6px; font-size: 18px; }
     .step p { margin: 0; color: var(--muted); font-size: 15.5px; }
 
@@ -179,28 +182,38 @@
     <div class="steps">
       <div class="step">
         <div class="num">1</div>
-        <h3>Build &amp; maintain your list &amp; cookbook</h3>
-        <p>Manually add items and recurring staples, extract full recipes from your camera roll, or let ListAlert curate meals just for you. Tag items to favorite stores/delivery apps, and plan your trip.</p>
+        <div class="step-body">
+          <h3>Build &amp; maintain your list &amp; cookbook</h3>
+          <p>Manually add items and recurring staples, extract full recipes from your camera roll, or let ListAlert curate meals just for you. Tag items to favorite stores/delivery apps, and plan your trip.</p>
+        </div>
       </div>
       <div class="step">
         <div class="num">2</div>
-        <h3>Build your pantry</h3>
-        <p>Track items and staples you have on hand, and let ListAlert automatically exclude them from planned trips.</p>
+        <div class="step-body">
+          <h3>Build your pantry</h3>
+          <p>Track items and staples you have on hand, and let ListAlert automatically exclude them from planned trips.</p>
+        </div>
       </div>
       <div class="step">
         <div class="num">3</div>
-        <h3>Plan your week</h3>
-        <p>Using intervals of 3-5-7 days, plan your meals with saved recipes in your cookbook, and augment with your saved list. Open Trip Planning Mode and let anyone in your household add/remove as needed.</p>
+        <div class="step-body">
+          <h3>Plan your week</h3>
+          <p>Using intervals of 3-5-7 days, plan your meals with saved recipes in your cookbook, and augment with your saved list. Open Trip Planning Mode and let anyone in your household add/remove as needed.</p>
+        </div>
       </div>
       <div class="step">
         <div class="num">4</div>
-        <h3>Shop your way</h3>
-        <p>Get reminders when you're nearby favorite stores with tagged items, and shop with your favorite stores/delivery apps without duplicating lists.</p>
+        <div class="step-body">
+          <h3>Shop your way</h3>
+          <p>Get reminders when you're nearby favorite stores with tagged items, and shop with your favorite stores/delivery apps without duplicating lists.</p>
+        </div>
       </div>
       <div class="step">
         <div class="num">5</div>
-        <h3>Track your history</h3>
-        <p>Get better visibility into your purchasing habits to help plan &amp; save.</p>
+        <div class="step-body">
+          <h3>Track your history</h3>
+          <p>Get better visibility into your purchasing habits to help plan &amp; save.</p>
+        </div>
       </div>
     </div>
   </div>
