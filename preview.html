@@ -83,8 +83,9 @@
 
     /* see it in action */
     .shots{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
-    .shots-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
-    @media (max-width:760px){.shots-row{grid-template-columns:1fr;}}
+    .shots-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+    @media (max-width:900px){.shots-row{grid-template-columns:repeat(2,1fr);}}
+    @media (max-width:520px){.shots-row{grid-template-columns:1fr;}}
     .shot{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 12px 30px rgba(26,20,16,.10);margin:0;}
     .shot img{width:100%;aspect-ratio:9/16;object-fit:cover;object-position:top center;display:block;}
     .shot figcaption{padding:12px 10px;text-align:center;font-size:13px;font-weight:700;color:var(--ink);}
@@ -182,6 +183,7 @@
     <div class="shots-row">
       <figure class="shot"><img src="Listsnip.jpg" alt="My List — grocery list with buy-again trends"><figcaption>My List &amp; buy-again trends</figcaption></figure>
       <figure class="shot"><img src="cookbooksnip.jpg" alt="My Cookbook — saved and curated recipes"><figcaption>My Cookbook</figcaption></figure>
+      <figure class="shot"><img src="Planweeksnip.jpg" alt="Plan the week — weekly meal plan"><figcaption>Plan the week</figcaption></figure>
       <figure class="shot"><img src="shoppingmodesnip.jpg" alt="Shopping mode — shared, live ingredient checklist"><figcaption>Live Shopping mode</figcaption></figure>
     </div>
   </div>
