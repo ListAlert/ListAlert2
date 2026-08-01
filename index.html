@@ -7,13 +7,15 @@
   <meta name="description" content="ListAlert turns your list into reminders when you're near the store — or a one-tap hand-off to your grocery apps when you'd rather have it delivered.">
   <style>
     :root {
-      --ink: #16202b;
-      --muted: #5a6672;
-      --accent: #1a6bbf;
-      --accent-2: #2d7dd2;
-      --line: #e5e8ec;
-      --panel: #f5f7fa;
-      --card: #ffffff;
+      --ink: #1A1410;
+      --muted: #6B6560;
+      --accent: #C17B2A;
+      --accent-2: #A0641F;
+      --accent-ink: #8A5417;   /* darker amber for small text on tints */
+      --tint: #F3E7D3;         /* warm amber tint for chips / badges */
+      --line: #E4DDD0;
+      --panel: #F5F0E8;
+      --card: #FFFFFF;
       --radius: 14px;
     }
     * { box-sizing: border-box; }
@@ -45,16 +47,16 @@
     @media (max-width: 620px) { .nav a.navlink { display: none; } }
 
     /* Hero */
-    .hero { background: linear-gradient(180deg, #eef4fb 0%, #ffffff 100%); border-bottom: 1px solid var(--line); }
+    .hero { background: linear-gradient(180deg, #F5EEE0 0%, #ffffff 100%); border-bottom: 1px solid var(--line); }
     .hero-inner { padding: 76px 0 68px; text-align: center; }
-    .eyebrow { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); background: #e3eefb; padding: 6px 14px; border-radius: 999px; margin-bottom: 22px; }
+    .eyebrow { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent-ink); background: var(--tint); padding: 6px 14px; border-radius: 999px; margin-bottom: 22px; }
     h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 18px; font-weight: 850; }
     h1 .grad { background: linear-gradient(120deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .lede { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 640px; margin: 0 auto 30px; }
     .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; align-items: center; }
     .btn { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 16px; padding: 14px 26px; border-radius: 12px; }
     .btn-primary { background: var(--ink); color: #fff; }
-    .btn-primary:hover { background: #0d1720; text-decoration: none; }
+    .btn-primary:hover { background: #0d0a07; text-decoration: none; }
     .btn-ghost { color: var(--ink); border: 1px solid var(--line); background: #fff; }
     .btn-ghost:hover { border-color: #c8d0d8; text-decoration: none; }
     .cta-note { font-size: 13px; color: var(--muted); margin-top: 16px; }
@@ -70,10 +72,10 @@
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
     @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
     .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
-    .card .ic { width: 46px; height: 46px; border-radius: 12px; background: #e8f1fc; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .card .ic { width: 46px; height: 46px; border-radius: 12px; background: var(--tint); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
     .card h3 { margin: 0 0 8px; font-size: 19px; letter-spacing: -0.01em; }
     .card p { margin: 0; color: var(--muted); font-size: 15.5px; }
-    .tag-soon { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--accent); background: #e3eefb; border-radius: 6px; padding: 2px 7px; margin-left: 6px; vertical-align: middle; }
+    .tag-soon { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--accent-ink); background: var(--tint); border-radius: 6px; padding: 2px 7px; margin-left: 6px; vertical-align: middle; }
 
     /* Steps */
     .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; counter-reset: step; }
