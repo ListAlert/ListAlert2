@@ -85,10 +85,9 @@
     .shots{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
     .shots-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
     @media (max-width:760px){.shots-row{grid-template-columns:1fr;}}
-    .shot{aspect-ratio:9/16;border:1px dashed #C9BFAE;border-radius:16px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);gap:8px;padding:18px;}
-    .shot .se{font-size:30px;}
-    .shot .sl{font-size:13px;font-weight:700;color:var(--ink);}
-    .shot .ss{font-size:11.5px;}
+    .shot{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 12px 30px rgba(26,20,16,.10);margin:0;}
+    .shot img{width:100%;aspect-ratio:9/16;object-fit:cover;object-position:top center;display:block;}
+    .shot figcaption{padding:12px 10px;text-align:center;font-size:13px;font-weight:700;color:var(--ink);}
 
     /* final CTA */
     .final{text-align:center;}
@@ -178,12 +177,12 @@
   <div class="wrap">
     <div class="section-head">
       <h2>See how it works</h2>
-      <p>Replace these frames with real screenshots or a short demo clip.</p>
+      <p>Your list, your cookbook, and live shopping mode — synced across the household.</p>
     </div>
     <div class="shots-row">
-      <div class="shot"><div class="se">📝</div><div class="sl">My List</div><div class="ss">Screenshot placeholder</div></div>
-      <div class="shot"><div class="se">🍳</div><div class="sl">Cookbook</div><div class="ss">Screenshot placeholder</div></div>
-      <div class="shot"><div class="se">🛍️</div><div class="sl">Shopping mode</div><div class="ss">Screenshot placeholder</div></div>
+      <figure class="shot"><img src="Listsnip.jpg" alt="My List — grocery list with buy-again trends"><figcaption>My List &amp; buy-again trends</figcaption></figure>
+      <figure class="shot"><img src="cookbooksnip.jpg" alt="My Cookbook — saved and curated recipes"><figcaption>My Cookbook</figcaption></figure>
+      <figure class="shot"><img src="shoppingmodesnip.jpg" alt="Shopping mode — shared, live ingredient checklist"><figcaption>Live Shopping mode</figcaption></figure>
     </div>
   </div>
 </section>
