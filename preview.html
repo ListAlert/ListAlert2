@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ListAlert — layout preview</title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Alternate, conversion-focused landing layout for ListAlert (preview only).">
+  <style>
+    :root{
+      --ink:#1A1410; --muted:#6B6560; --accent:#C17B2A; --accent-2:#A0641F;
+      --accent-ink:#8A5417; --tint:#F3E7D3; --line:#E4DDD0; --panel:#F5F0E8; --card:#FFFFFF;
+    }
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;background:#fff;}
+    a{color:var(--accent-ink);text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    .wrap{max-width:1060px;margin:0 auto;padding:0 24px;}
+
+    /* preview ribbon */
+    .previewbar{background:var(--ink);color:#F5EEE0;font-size:12.5px;text-align:center;padding:7px 12px;letter-spacing:.02em;}
+    .previewbar strong{color:#fff;}
+
+    header.nav{border-bottom:1px solid var(--line);}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px;}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em;}
+    .brand .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:15px;}
+    .brand .ios{font-size:12px;font-weight:600;color:var(--muted);margin-left:6px;}
+
+    /* hero */
+    .hero{background:linear-gradient(180deg,#F5EEE0 0%,#fff 100%);border-bottom:1px solid var(--line);}
+    .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center;padding:66px 0;}
+    @media (max-width:820px){.hero-grid{grid-template-columns:1fr;gap:36px;text-align:center;padding:52px 0;}}
+    .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink);background:var(--tint);padding:6px 13px;border-radius:999px;margin-bottom:20px;}
+    h1{font-size:clamp(32px,5vw,50px);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px;font-weight:850;}
+    h1 .grad{background:linear-gradient(120deg,var(--accent-2),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .lede{font-size:clamp(16px,2.2vw,19px);color:var(--muted);margin:0 0 26px;max-width:520px;}
+    @media (max-width:820px){.lede{margin-left:auto;margin-right:auto;}}
+
+    /* waitlist form */
+    .waitlist{display:flex;gap:10px;max-width:440px;flex-wrap:wrap;}
+    @media (max-width:820px){.waitlist{margin:0 auto;justify-content:center;}}
+    .waitlist input{flex:1 1 200px;min-width:0;padding:14px 16px;font-size:16px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font-family:inherit;}
+    .waitlist input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(193,123,42,.15);}
+    .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:16px;padding:14px 24px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;}
+    .btn-primary{background:var(--ink);color:#fff;}
+    .btn-primary:hover{background:#0d0a07;}
+    .wl-note{font-size:13px;color:var(--muted);margin:14px 0 0;}
+    .wl-note b{color:var(--accent-ink);}
+
+    /* phone mockup */
+    .phone{width:250px;height:508px;border-radius:38px;background:var(--ink);padding:11px;box-shadow:0 24px 60px rgba(26,20,16,.22);margin:0 auto;position:relative;}
+    .phone .screen{width:100%;height:100%;border-radius:28px;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);gap:10px;padding:24px;position:relative;overflow:hidden;}
+    .phone .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:112px;height:22px;background:var(--ink);border-radius:0 0 14px 14px;z-index:2;}
+    .phone .ph-emoji{font-size:40px;}
+    .phone .ph-label{font-size:13px;font-weight:600;}
+    .phone .ph-sub{font-size:11.5px;line-height:1.4;opacity:.8;}
+
+    /* core benefit strip */
+    .benefit{background:var(--panel);border-bottom:1px solid var(--line);}
+    .benefit-inner{padding:44px 0;text-align:center;}
+    .benefit-inner p{margin:0 auto;max-width:680px;font-size:clamp(18px,2.6vw,23px);font-weight:600;letter-spacing:-.01em;line-height:1.4;}
+    .benefit-inner .accent{color:var(--accent-ink);}
+
+    /* features: exactly 3 */
+    section{padding:66px 0;}
+    .section-head{text-align:center;max-width:600px;margin:0 auto 40px;}
+    .section-head h2{font-size:clamp(24px,3.6vw,32px);letter-spacing:-.02em;margin:0 0 10px;font-weight:800;}
+    .section-head p{font-size:16px;color:var(--muted);margin:0;}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+    @media (max-width:760px){.grid3{grid-template-columns:1fr;}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px;}
+    .card .ic{width:46px;height:46px;border-radius:12px;background:var(--tint);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;}
+    .card h3{margin:0 0 8px;font-size:18px;letter-spacing:-.01em;}
+    .card p{margin:0;color:var(--muted);font-size:15px;}
+    .tag-soon{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--accent-ink);background:var(--tint);border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:middle;}
+
+    /* see it in action */
+    .shots{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+    .shots-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+    @media (max-width:760px){.shots-row{grid-template-columns:1fr;}}
+    .shot{aspect-ratio:9/16;border:1px dashed #C9BFAE;border-radius:16px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);gap:8px;padding:18px;}
+    .shot .se{font-size:30px;}
+    .shot .sl{font-size:13px;font-weight:700;color:var(--ink);}
+    .shot .ss{font-size:11.5px;}
+
+    /* final CTA */
+    .final{text-align:center;}
+    .final h2{font-size:clamp(24px,3.6vw,34px);letter-spacing:-.02em;margin:0 0 12px;}
+    .final p{color:var(--muted);font-size:17px;margin:0 0 24px;}
+    .final .waitlist{margin:0 auto;justify-content:center;}
+
+    footer{border-top:1px solid var(--line);padding:34px 0;}
+    .foot-inner{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;}
+    .foot-links a{color:var(--muted);font-weight:600;font-size:14px;margin-left:20px;}
+    .foot-links a:first-child{margin-left:0;}
+    .copy{color:var(--muted);font-size:13px;}
+  </style>
+</head>
+<body>
+
+<div class="previewbar"><strong>Layout preview</strong> — a leaner, conversion-focused alternative. Not the live site (that's <a href="index.html" style="color:#F5EEE0;text-decoration:underline;">listalert.app</a>).</div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="dot">✓</span> ListAlert <span class="ios">for iPhone</span></div>
+  </div>
+</header>
+
+<!-- HERO: 1 core benefit + waitlist + a visual -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Coming soon to iPhone</span>
+      <h1>Never forget<br><span class="grad">the milk again.</span></h1>
+      <p class="lede">ListAlert reminds you what to grab when you're near the store — plan meals, share the list with your household, and tap to order when you'd rather have it delivered.</p>
+      <form class="waitlist" onsubmit="return joinWaitlist(event)">
+        <input type="email" id="wl-email" placeholder="you@email.com" aria-label="Email address" required>
+        <button type="submit" class="btn btn-primary">Notify me at launch</button>
+      </form>
+      <p class="wl-note" id="wl-note"><b>iPhone first</b> — Android on the roadmap. No spam, just a launch note.</p>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="ph-emoji">📱</div>
+          <div class="ph-label">App screenshot goes here</div>
+          <div class="ph-sub">Drop a real screenshot or a short demo GIF of My List / Shopping mode in this frame.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 1 core benefit, stated plainly -->
+<div class="benefit">
+  <div class="wrap benefit-inner">
+    <p>One app for the whole trip: <span class="accent">get inspired, plan the week, share the list, and shop your way</span> — in person or delivered.</p>
+  </div>
+</div>
+
+<!-- exactly 3 features -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Three things it does best</h2>
+      <p>The essentials — the rest you'll discover in the app.</p>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="ic">🔔</div>
+        <h3>Reminders near your stores</h3>
+        <p>Tag today's items to your favorite stores and get reminded the moment you're nearby — even with your phone in your pocket.</p>
+      </div>
+      <div class="card">
+        <div class="ic">👨‍👩‍👧</div>
+        <h3>One list for the whole house</h3>
+        <p>Personal and shared household lists that sync within seconds — a last-minute add at home reaches whoever's shopping.</p>
+      </div>
+      <div class="card">
+        <div class="ic">🛒</div>
+        <h3>Tap to order</h3>
+        <p>Send your list to your Kroger cart or search Walmart in a tap. Instacart<span class="tag-soon">Coming soon</span> and more on the way.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- visuals band -->
+<section class="shots">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>See it in action</h2>
+      <p>Replace these frames with real screenshots or a short demo clip.</p>
+    </div>
+    <div class="shots-row">
+      <div class="shot"><div class="se">📝</div><div class="sl">My List</div><div class="ss">Screenshot placeholder</div></div>
+      <div class="shot"><div class="se">🍳</div><div class="sl">Cookbook</div><div class="ss">Screenshot placeholder</div></div>
+      <div class="shot"><div class="se">🛍️</div><div class="sl">Shopping mode</div><div class="ss">Screenshot placeholder</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- final CTA -->
+<section class="final">
+  <div class="wrap">
+    <h2>Be first to know</h2>
+    <p>ListAlert launches soon on iPhone. Get a note the day it's live.</p>
+    <form class="waitlist" onsubmit="return joinWaitlist(event)">
+      <input type="email" id="wl-email2" placeholder="you@email.com" aria-label="Email address" required>
+      <button type="submit" class="btn btn-primary">Notify me at launch</button>
+    </form>
+    <p class="wl-note" id="wl-note2">iPhone first — Android on the roadmap.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div class="copy">&copy; 2026 ListAlert. All rights reserved.</div>
+    <div class="foot-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="mailto:ListAlertApp@yahoo.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Lightweight, no-backend waitlist: routes the typed email to the owner's inbox
+  // via the OS mail app. Swap for a Supabase insert or a form service to store
+  // signups directly. Returns false to avoid a page navigation on submit.
+  function joinWaitlist(e){
+    e.preventDefault();
+    var input = e.target.querySelector('input[type=email]');
+    var email = (input && input.value || '').trim();
+    if(!email) return false;
+    var note = e.target.parentNode.querySelector('.wl-note');
+    if(note){ note.innerHTML = "Thanks! Opening your email app to confirm your spot…"; }
+    var subject = encodeURIComponent('ListAlert waitlist');
+    var body = encodeURIComponent('Please add me to the ListAlert launch waitlist: ' + email);
+    window.location.href = 'mailto:ListAlertApp@yahoo.com?subject=' + subject + '&body=' + body;
+    return false;
+  }
+</script>
+
+</body>
+</html>
