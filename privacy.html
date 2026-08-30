@@ -25,7 +25,7 @@
 <body>
 
 <h1>Privacy Policy</h1>
-<p class="meta">ListAlert &nbsp;·&nbsp; Effective date: June 1, 2026 &nbsp;·&nbsp; Last updated: July 26, 2026</p>
+<p class="meta">ListAlert &nbsp;·&nbsp; Effective date: June 1, 2026 &nbsp;·&nbsp; Last updated: August 30, 2026</p>
 
 <p>This Privacy Policy describes how ListAlert ("we," "us," or "our") collects, uses, shares, and protects information when you use the ListAlert mobile application and associated services (the "Service"). We are committed to handling your information with transparency and minimal footprint.</p>
 
@@ -44,7 +44,7 @@
   <li><strong>Recipes</strong> — recipes you save, including photos you upload, URLs you paste, or text you type. Extracted ingredients, cuisine type, cook time, and vibe tags.</li>
   <li><strong>Household information</strong> — the display name you choose when creating or joining a household, and the display names of other household members you can see.</li>
   <li><strong>Store preferences</strong> — the name, address, and GPS coordinates of stores you save and favorite.</li>
-  <li><strong>Email address (optional)</strong> — only if you choose to sign up for product updates. This is never required, and the email sign-up feature is not currently enabled in the app.</li>
+  <li><strong>Email address (optional)</strong> — if you add a recovery email to protect your household access (so you can restore it after reinstalling or on a new device via a magic-link sign-in), or if you choose to sign up for product updates. Email is never required to use the app's core features.</li>
 </ul>
 
 <h3>2.2 Information collected automatically</h3>
@@ -97,6 +97,11 @@
       <td>Performance of contract / your explicit action</td>
     </tr>
     <tr>
+      <td>Restore household access (account recovery via magic-link sign-in)</td>
+      <td>Email address (only if you add a recovery email)</td>
+      <td>Your explicit action / performance of contract</td>
+    </tr>
+    <tr>
       <td>Send product updates (waitlist)</td>
       <td>Email address (only if provided)</td>
       <td>Your explicit opt-in consent</td>
@@ -135,7 +140,7 @@
   <li>Recipe photos: stored as files in a private Supabase Storage bucket (<code>recipe-images</code>)</li>
   <li>Active shared shopping trips: the trip's item list and checked-off state (synced for real-time household coordination)</li>
   <li>Household meal plans: selected recipe IDs and slot count (synced for household coordination)</li>
-  <li>Email addresses, if submitted via the optional product-update sign-up (this feature is not currently enabled in the app)</li>
+  <li>Email addresses, if you add a recovery email (to restore household access) or sign up for optional product updates. A recovery email is also linked to your Supabase Auth account to enable magic-link sign-in.</li>
 </ul>
 <p>Supabase servers are hosted in the United States. See <a href="https://supabase.com/privacy" target="_blank">Supabase's Privacy Policy</a>.</p>
 
@@ -208,6 +213,7 @@
   <li>Location (background) — App Functionality — Not Linked to Identity</li>
   <li>Other Diagnostic Data (crash reports, touch breadcrumbs) — App Functionality — Not Linked to Identity</li>
   <li>User ID (anonymous session identifier) — App Functionality — Not Linked to Identity</li>
+  <li>Contact Info (email address — only if you provide one for household recovery or product updates) — App Functionality &amp; Account Management — Linked to Identity</li>
 </ul>
 
 <h2>7. Data Retention and Deletion</h2>
@@ -257,7 +263,7 @@
 <p>To exercise any of these rights, email us at <a href="mailto:info@listalert.app">info@listalert.app</a>. We will respond within 30 days.</p>
 
 <h3>California residents (CCPA / CPRA)</h3>
-<p>California residents have the right to know what personal information is collected, to delete personal information, to opt out of the sale of personal information (we do not sell personal information), and to non-discrimination for exercising these rights. To submit a CCPA request, use the contact information in Section 11.</p>
+<p>California residents have the right to know what personal information is collected, to delete personal information, to opt out of the sale of personal information (we do not sell personal information), and to non-discrimination for exercising these rights. To submit a CCPA request, use the contact information in Section 12.</p>
 
 <h2>11. Changes to This Policy</h2>
 <p>We may update this Privacy Policy from time to time. When we make material changes, we will update the "Last updated" date at the top of this page and, where required by law, seek your consent. Continued use of the Service after changes become effective constitutes acceptance of the updated policy.</p>
