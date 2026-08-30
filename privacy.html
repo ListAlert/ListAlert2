@@ -52,7 +52,7 @@
   <li><strong>Anonymous session identifier</strong> — when you first launch the app, an anonymous Supabase user ID is generated for your device. This ID has no connection to your name, email, or any other personal identifier unless you later link an email.</li>
   <li><strong>Device location</strong> — used in two distinct ways. <em>(1) Background proximity alerts (opt-in):</em> ListAlert requests background location permission only when you enable a GPS alert for a store. When enabled, geofencing runs on your device's operating system to detect when you are near a saved store and fire a local notification; these background coordinates are not transmitted to our servers or shared with third parties. <em>(2) Store search:</em> when you actively search for a nearby store, your current coordinates are sent through our Cloudflare Worker to the Google Places API to return nearby results (see Section 5.3). If you never enable GPS alerts and never search for a store, we do not collect location.</li>
   <li><strong>Purchase and trip history</strong> — when you end a shopping trip, the app records the list of completed item names and the trip duration; this history is stored locally on your device. If you belong to a household, the items and checked-off state of your <em>active</em> shared shopping trip are also stored in our Supabase database so household members share one live trip (see Section 4.2).</li>
-  <li><strong>Crash and diagnostic data</strong> — when the app crashes, a crash report is automatically transmitted via Sentry (our crash-monitoring service). These reports include device model, OS version, app version, a stack trace, and touch-event breadcrumbs (a record of which UI elements were tapped before the crash). They do not include your list contents, location, or account information.</li>
+  <li><strong>Crash and diagnostic data</strong> — the app uses Sentry (our crash- and performance-monitoring service). When the app crashes, a crash report is automatically transmitted, including device model, OS version, app version, a stack trace, and touch-event breadcrumbs (a record of which UI elements were tapped before the crash). Sentry also samples basic performance metrics (such as screen-load timing) to help us find slow or failing screens. This data does not include your list contents, location, or account information.</li>
 </ul>
 
 <h3>2.3 Information we do NOT collect</h3>
@@ -214,7 +214,7 @@
   <li>Location — Precise Location (sent only when you search for a nearby store; background proximity alerts are processed on-device and not collected) — App Functionality — Not Linked to Identity</li>
   <li>User Content — Photos (recipe photos you upload) and Other User Content (grocery list items and recipe text you save), stored for household sync — App Functionality — Linked to Identity</li>
   <li>Identifiers — User ID (anonymous session identifier) — App Functionality — Not Linked to Identity</li>
-  <li>Diagnostics — Crash Data and Other Diagnostic Data (crash reports and touch breadcrumbs) — App Functionality — Not Linked to Identity</li>
+  <li>Diagnostics — Crash Data, Performance Data, and Other Diagnostic Data (crash reports, basic performance metrics, and touch breadcrumbs) — App Functionality — Not Linked to Identity</li>
 </ul>
 
 <h2>7. Data Retention and Deletion</h2>
